@@ -2,63 +2,56 @@ from ls_network import *
 
 def init():
     return 0
-def init_dv(node_dict):
-    tables = dict()
-    for x in node_dict:
-        tables[x] = dict()
-        for y in node_dict:
-            tables[x][y] = (float('inf'),-1)
-        for end, weight in node_dict[x]:
-            tables[x][x] = (weight, end)
-    return tables
-def distance_vector(node_dict, tables):
-    count = 0
-    changesC = 0
-    for i in tables:
-        for x in tables:
-            prop = tables[x]
-            for y, weight in node_dict[x]:
-                xydist = prop[y][0]
-                yval = tables[y]
-                for z in prop:
-                    if yval[z] > prop[z][0]+xydist:
-                        tables[y][z] = (prop[z][0]+xydist, prop[z][1])
-                        changesC+=1
-                count+=1
-    print("Update counter:", count)
-    print("Changed value counter:", changesC)
-    return tables
-def remove_node_dv(node, tables):
-    for x in tables:
-        del tables[x][node]
-    del tables[node]
-    return tables
-def add_node_dv(node_dict, node, tables):
-    for x in tables:
-        tables[x][node] = (float('inf'),-1)
-    tables[node] = dict()
-    for x in node_dict:
-        tables[node][x] = (float('inf'),-1)
-    for end, weight in node_dict[node]:
-        tables[node][end] = (weight, end)
-        tables[end][node] = (weight, node)
-    return tables
-def remove_link_dv(start, end, tables):
-    tables[start][end] = (float('inf'),-1)
-    tables[end][start] = (float('inf'),-1)
-    return tables
-def add_link_dv(start, end, tables, node_dict):
-    for dest, weight in node_dict[start]:
-        if (dest == end):
-            if tables[start][end][0] > weight:
-                tables[start][end] = (weight, end)
-            break
-    for dest, weight in node_dict[end]:
-        if (dest == start):
-            if tables[end][start][0] > weight:
-                tables[end][start] = (weight, start)
-            break
-    return tables
+class DistanceVector:
+    def __init__(self, tables) -> None:
+        self.tables = dict()
+        if (tables is not None):
+            for x in tables:
+                self.tables[x] = dict()
+                for y in tables:
+                    self.tables[x][y] = (float('inf'),-1)
+                for end, weight in tables[x]:
+                    self.tables[x][end] = (weight, end)
+                self.tables[x][x] = (0, x)
+    def distance_vector(self):
+        count = 0
+        changesC = 0
+        for i in self.tables:
+            tempC = changesC
+            for x in self.tables:
+                prop = self.tables[x]
+                for y in prop:
+                    if (prop[y][1]==y):
+                        xydist = prop[y][0]
+                        yval = self.tables[y]
+                        for z in prop:
+                            if yval[z][0] > prop[z][0]+xydist:
+                                print("Value from", y, "to", z, "changed to", prop[z][0]+xydist, "from", self.tables[y][z][0])
+                                self.tables[y][z] = (prop[z][0]+xydist, prop[z][1])
+                                changesC+=1
+                        count+=1
+            if tempC == changesC:
+                break #convergence
+        print("Update counter:", count)
+        print("Changed value counter:", changesC)
+    def remove_node(self, node):
+        for x in self.tables:
+            del self.tables[x][node]
+        del self.tables[node]
+    def add_node(self, node):
+        self.tables[node] = dict()
+        for x in self.tables:
+            self.tables[node][x] = (float('inf'),-1)
+            self.tables[x][node] = (float('inf'),-1)
+        self.tables[node][node] = (0, node)
+    def remove_link(self, start, end):
+        self.tables[start][end] = (float('inf'),-1)
+        self.tables[end][start] = (float('inf'),-1)
+    def add_link(self, start, end, weight):
+        if self.tables[start][end][0] > weight:
+            self.tables[start][end] = (weight, end)
+        if self.tables[end][start][0] > weight:
+            self.tables[end][start] = (weight, start)
 
 def link_state():
     network = Network()
@@ -76,6 +69,17 @@ def link_state():
 
     return 0
 
-
+def dist_vec():
+    dv = DistanceVector(None)
+    dv.add_node(1)
+    dv.add_node(2)
+    dv.add_node(3)
+    dv.add_link(1, 2, 1)
+    dv.add_link(1, 3, 1)
+    dv.add_link(2, 3, 1)
+    dv.distance_vector()
+    dv.remove_link(2, 3)
+    dv.distance_vector()
 if __name__ == "__main__":
     link_state()
+    dist_vec()
