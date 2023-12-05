@@ -1,5 +1,5 @@
 import random
-
+from graphs import *
 
 def read_file(filename):
     infile = open(filename, "r")
@@ -43,6 +43,8 @@ def fix_edge_weights(old_dict, new_dict):
 
 
 dict1 = read_file("as19971110.txt")
+dv = DistanceVector(dict1)
+dv.distance_vector()
 dict2 = read_file("as19971111.txt")
 fix_edge_weights(dict1, dict2)
 # print(dict1)

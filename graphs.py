@@ -26,12 +26,15 @@ class DistanceVector:
                         yval = self.tables[y]
                         for z in prop:
                             if yval[z][0] > prop[z][0]+xydist:
-                                print("Value from", y, "to", z, "changed to", prop[z][0]+xydist, "from", self.tables[y][z][0])
+                                #print("Value from", y, "to", z, "changed to", prop[z][0]+xydist, "from", self.tables[y][z][0])
                                 self.tables[y][z] = (prop[z][0]+xydist, prop[z][1])
                                 changesC+=1
                         count+=1
             if tempC == changesC:
                 break #convergence
+        #for x in self.tables:
+            #for y in self.tables[x]:
+                #print("Pair:", (x,y), "Vals:", self.tables[x][y])
         print("Update counter:", count)
         print("Changed value counter:", changesC)
     def remove_node(self, node):
@@ -74,12 +77,15 @@ def dist_vec():
     dv.add_node(1)
     dv.add_node(2)
     dv.add_node(3)
-    dv.add_link(1, 2, 1)
-    dv.add_link(1, 3, 1)
-    dv.add_link(2, 3, 1)
+    dv.add_node(4)
+    dv.add_node(5)
+    dv.add_link(1,2,1)
+    dv.add_link(1,3,1)
+    dv.add_link(2,3,3)
+    dv.add_link(2,4,1)
+    dv.add_link(4,5,2)
     dv.distance_vector()
-    dv.remove_link(2, 3)
-    dv.distance_vector()
+
 if __name__ == "__main__":
     link_state()
     dist_vec()
