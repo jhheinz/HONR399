@@ -30,6 +30,19 @@ def read_file(filename):
     return node_dict
 
 
-dict1 = read_file("as19971110.txt")
-print(dict1)
+def fix_edge_weights(old_dict, new_dict):
+    for node in new_dict.keys():
+        for tup in new_dict[node]:
+            try:
+                for tup2 in old_dict[node]:
+                    if tup2[0] == tup[0]:
+                        # tuple does not support item assignment, change following line
+                        tup[1] = tup2[1]
+            except KeyError:
+                pass
 
+
+dict1 = read_file("as19971110.txt")
+dict2 = read_file("as19971111.txt")
+fix_edge_weights(dict1, dict2)
+# print(dict1)
