@@ -1,3 +1,5 @@
+from ls_network import *
+
 def init():
     return 0
 def init_dv(node_dict):
@@ -52,5 +54,23 @@ def add_link_dv(start, end, tables, node_dict):
     if tables[end][start][0] > node_dict[end][start][1]:
         tables[end][start] = (node_dict[end][start][1], start)
     return tables
+
 def link_state():
+    network = Network()
+    # network.add_router_and_links(1, [[2, 1], [3, 1]])
+    # network.add_router_and_links(2, [[1, 1], [3, 1]])
+    # network.add_router_and_links(3, [[1, 1], [2, 1]])
+    network.add_router(1)
+    network.add_router(2)
+    network.add_router(3)
+    network.add_link(1, 2, 1)
+    network.add_link(1, 3, 1)
+    network.add_link(2, 3, 1)
+    network.do_tick()
+    network.dump_network("ls_test.json")
+
     return 0
+
+
+if __name__ == "__main__":
+    link_state()
