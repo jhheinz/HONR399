@@ -6,8 +6,8 @@ def init_dv(node_dict):
         tables[x] = dict()
         for y in node_dict:
             tables[x][y] = (float('inf'),-1)
-        for y in node_dict[x]:
-            tables[x][x] = (node_dict[x][y][1], y)
+        for end, weight in node_dict[x]:
+            tables[x][x] = (weight, end)
     return tables
 def distance_vector(node_dict, tables):
     count = 0
@@ -15,7 +15,7 @@ def distance_vector(node_dict, tables):
     for i in tables:
         for x in tables:
             prop = tables[x]
-            for y in node_dict[x]:
+            for y, weight in node_dict[x]:
                 xydist = prop[y][0]
                 yval = tables[y]
                 for z in prop:
@@ -37,20 +37,25 @@ def add_node_dv(node_dict, node, tables):
     tables[node] = dict()
     for x in node_dict:
         tables[node][x] = (float('inf'),-1)
-    for x in node_dict[node]:
-        weight = node_dict[node][x][1]
-        tables[node][x] = (weight, x)
-        tables[x][node] = (weight, node)
+    for end, weight in node_dict[node]:
+        tables[node][end] = (weight, end)
+        tables[end][node] = (weight, node)
     return tables
 def remove_link_dv(start, end, tables):
     tables[start][end] = (float('inf'),-1)
     tables[end][start] = (float('inf'),-1)
     return tables
 def add_link_dv(start, end, tables, node_dict):
-    if tables[start][end][0] > node_dict[start][end][1]:
-        tables[start][end] = (node_dict[start][end][1], end)
-    if tables[end][start][0] > node_dict[end][start][1]:
-        tables[end][start] = (node_dict[end][start][1], start)
+    for dest, weight in node_dict[start]:
+        if (dest == end):
+            if tables[start][end][0] > weight:
+                tables[start][end] = (weight, end)
+            break
+    for dest, weight in node_dict[end]:
+        if (dest == start):
+            if tables[end][start][0] > weight:
+                tables[end][start] = (weight, start)
+            break
     return tables
 def link_state():
     return 0
