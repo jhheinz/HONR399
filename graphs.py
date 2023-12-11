@@ -13,30 +13,34 @@ class DistanceVector:
                 for end, weight in tables[x]:
                     self.tables[x][end] = (weight, end)
                 self.tables[x][x] = (0, x)
+        self.queue = []
+        for x in self.tables:
+            self.queue.append(x)
     def distance_vector(self):
-        count = 0
         changesC = 0
-        for i in self.tables:
-            tempC = changesC
-            for x in self.tables:
-                prop = self.tables[x]
-                for y in prop:
-                    if (prop[y][1]==y):
-                        xydist = prop[y][0]
-                        yval = self.tables[y]
-                        for z in prop:
-                            if yval[z][0] > prop[z][0]+xydist:
-                                #print("Value from", y, "to", z, "changed to", prop[z][0]+xydist, "from", self.tables[y][z][0])
-                                self.tables[y][z] = (prop[z][0]+xydist, prop[z][1])
-                                changesC+=1
-                        count+=1
-            if tempC == changesC:
-                break #convergence
-        #for x in self.tables:
-            #for y in self.tables[x]:
-                #print("Pair:", (x,y), "Vals:", self.tables[x][y])
+        count = 0
+        while (self.queue):
+            x = self.queue.pop(0)
+            for y in self.tables[x]:
+                change = False
+                if (self.tables[x][y][1]==y and self.tables[x][y][0] != 0):
+                    xydist = self.tables[x][y][0]
+                    yval = self.tables[y]
+                    for z in self.tables[x]:
+                        if yval[z][0] > self.tables[x][z][0]+xydist:
+                            #print("Value from", y, "to", z, "changed to", prop[z][0]+xydist, "from", self.tables[y][z][0])
+                            self.tables[y][z] = (self.tables[x][z][0]+xydist, x)
+                            changesC+=1 # number of times an edge cost is updated
+                            change = True
+                    if change:
+                        count+=1 # number of times a router gets updated (and put onto the queue)
+                        if y not in self.queue:
+                            self.queue.append(y)
+            print(len(self.queue))
         print("Update counter:", count)
-        print("Changed value counter:", changesC)
+        print("Changed value counter:", changesC)                    
+        for x in self.tables:
+            print("x:", self.tables[x])
     def remove_node(self, node):
         for x in self.tables:
             del self.tables[x][node]
@@ -48,13 +52,21 @@ class DistanceVector:
             self.tables[x][node] = (float('inf'),-1)
         self.tables[node][node] = (0, node)
     def remove_link(self, start, end):
-        self.tables[start][end] = (float('inf'),-1)
-        self.tables[end][start] = (float('inf'),-1)
+        del self.tables[start][end]
+        del self.tables[end][start] # count to infinity problem, could "fix" by removing all paths to
     def add_link(self, start, end, weight):
         if self.tables[start][end][0] > weight:
             self.tables[start][end] = (weight, end)
+            if start not in self.queue:
+                self.queue.append(start)
+            if end not in self.queue:
+                self.queue.append(end)
         if self.tables[end][start][0] > weight:
             self.tables[end][start] = (weight, start)
+            if start not in self.queue:
+                self.queue.append(start)
+            if end not in self.queue:
+                self.queue.append(end)
 
 def link_state():
     network = Network()
