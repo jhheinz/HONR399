@@ -27,7 +27,10 @@ class DistanceVector:
                     xydist = self.tables[x][y][0]
                     yval = self.tables[y]
                     for z in self.tables[x]:
-                        if yval[z][0] > self.tables[x][z][0]+xydist:
+                        if self.tables[x][z][1] == y:
+                            #split horizon avoidance of count to infinity
+                            continue
+                        elif yval[z][0] > self.tables[x][z][0]+xydist:
                             #print("Value from", y, "to", z, "changed to", prop[z][0]+xydist, "from", self.tables[y][z][0])
                             self.tables[y][z] = (self.tables[x][z][0]+xydist, x)
                             changesC+=1 # number of times an edge cost is updated
@@ -36,7 +39,7 @@ class DistanceVector:
                         count+=1 # number of times a router gets updated (and put onto the queue)
                         if y not in self.queue:
                             self.queue.append(y)
-            print(len(self.queue))
+            print(self.queue)
         print("Update counter:", count)
         print("Changed value counter:", changesC)                    
         for x in self.tables:
@@ -52,8 +55,8 @@ class DistanceVector:
             self.tables[x][node] = (float('inf'),-1)
         self.tables[node][node] = (0, node)
     def remove_link(self, start, end):
-        del self.tables[start][end]
-        del self.tables[end][start] # count to infinity problem, could "fix" by removing all paths to
+        self.tables[start][end] = (float('inf'),-1)
+        self.tables[end][start] = (float('inf'),-1)
     def add_link(self, start, end, weight):
         if self.tables[start][end][0] > weight:
             self.tables[start][end] = (weight, end)
@@ -86,7 +89,7 @@ def link_state():
 
 def dist_vec():
     dv = DistanceVector(None)
-    dv.add_node(1)
+    """dv.add_node(1)
     dv.add_node(2)
     dv.add_node(3)
     dv.add_node(4)
@@ -96,6 +99,18 @@ def dist_vec():
     dv.add_link(2,3,3)
     dv.add_link(2,4,1)
     dv.add_link(4,5,2)
+    dv.distance_vector()"""
+    dv.add_node(1)
+    dv.add_node(2)
+    dv.add_node(3)
+    dv.add_node(4)
+    dv.add_node(5)
+    dv.add_link(1,2,1)
+    dv.add_link(2,3,1)
+    dv.add_link(3,4,1)
+    dv.add_link(4,5,1)
+    dv.distance_vector()
+    dv.remove_link(1,2)
     dv.distance_vector()
 
 if __name__ == "__main__":
