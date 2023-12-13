@@ -19,11 +19,13 @@ class DistanceVector:
     def distance_vector(self):
         changesC = 0
         count = 0
+        packets = 0
         while (self.queue):
             x = self.queue.pop(0)
             for y in self.tables[x]:
                 change = False
                 if (self.tables[x][y][1]==y and self.tables[x][y][0] != 0):
+                    packets+=1 #packet sent to router y
                     xydist = self.tables[x][y][0]
                     yval = self.tables[y]
                     for z in self.tables[x]:
@@ -39,11 +41,13 @@ class DistanceVector:
                         count+=1 # number of times a router gets updated (and put onto the queue)
                         if y not in self.queue:
                             self.queue.append(y)
-            print(self.queue)
-        print("Update counter:", count)
-        print("Changed value counter:", changesC)                    
-        for x in self.tables:
-            print("x:", self.tables[x])
+            print(len(self.queue))
+        print("Routers updated:", count, "times")
+        print("Changed value counter:", changesC)    
+        print("Packets sent:", packets)
+        return (packets, count, changesC)                
+        #for x in self.tables:
+            #print("x:", self.tables[x])
     def remove_node(self, node):
         for x in self.tables:
             del self.tables[x][node]

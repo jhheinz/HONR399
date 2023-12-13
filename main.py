@@ -38,10 +38,26 @@ def read_directory(path):
     for file in files:
         print("reading file", file)
         filepath = path + "/" + file
-        file_dicts.append(read_file(filepath))
+        node_edge = get_counts(filepath)
+        file_dicts.append((node_edge[0], node_edge[1], read_file(filepath)))
     return file_dicts
 
-
+def get_counts(filename):
+    infile = open(filename, "r")
+    for line in infile:
+        if line.startswith("#"):
+            if "Edges:" in line:
+                lst = line.split("\t")
+                lst[1] = lst[1].rstrip("\n")
+                vals = []
+                for x in lst:
+                    num = ""
+                    for c in x:
+                        if c.isdigit():
+                            num = num + c
+                    vals.append(num)
+    infile.close()
+    return vals
 def fix_edge_weights(old_dict, new_dict):
     for node in new_dict.keys():
         for tup in new_dict[node]:
@@ -55,14 +71,15 @@ def fix_edge_weights(old_dict, new_dict):
 
 
 # read all 733 files into their own dict
-# list_of_dicts = read_directory("as-733")
+list_of_dicts = read_directory("as-733")
 
-
-dict1 = read_file("as19971110.txt")
-dv = DistanceVector(dict1)
-dv.distance_vector()
-
-
+graphs_list = []
+for graph in list_of_dicts:
+    x = graph[2]
+    dv = DistanceVector(x)
+    returns = dv.distance_vector()
+    graphs_list.append((graph[0], graph[1], returns[0], returns[1], returns[2]))
+# print to csv
 # dict2 = read_file("as19971111.txt")
 # fix_edge_weights(dict1, dict2)
 # print(dict1)
