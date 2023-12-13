@@ -1,5 +1,7 @@
+import os
 import random
 from graphs import *
+
 
 def read_file(filename):
     infile = open(filename, "r")
@@ -30,6 +32,16 @@ def read_file(filename):
     return node_dict
 
 
+def read_directory(path):
+    files = os.listdir(path)
+    file_dicts = []
+    for file in files:
+        print("reading file", file)
+        filepath = path + "/" + file
+        file_dicts.append(read_file(filepath))
+    return file_dicts
+
+
 def fix_edge_weights(old_dict, new_dict):
     for node in new_dict.keys():
         for tup in new_dict[node]:
@@ -42,9 +54,15 @@ def fix_edge_weights(old_dict, new_dict):
                 pass
 
 
+# read all 733 files into their own dict
+# list_of_dicts = read_directory("as-733")
+
+
 dict1 = read_file("as19971110.txt")
 dv = DistanceVector(dict1)
 dv.distance_vector()
-dict2 = read_file("as19971111.txt")
-fix_edge_weights(dict1, dict2)
+
+
+# dict2 = read_file("as19971111.txt")
+# fix_edge_weights(dict1, dict2)
 # print(dict1)
