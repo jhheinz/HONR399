@@ -1,0 +1,9 @@
+Output of the link state simulator running link_state_lsa_data():
+
+Iteration 1 complete with 964494 LSAs sent
+Iteration 2 complete with 3643101 LSAs sent
+Iteration 3 complete with 18135692 LSAs sent
+Iteration 4 complete with 263007369 LSAs sent
+Iteration 5 complete with 8615169140 LSAs sent
+zsh: killed     python3 graphs.py
+python3 graphs.py  583.55s user 24.85s system 93% cpu 10:48.25 total
