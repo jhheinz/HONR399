@@ -41,10 +41,10 @@ class DistanceVector:
                         count+=1 # number of times a router gets updated (and put onto the queue)
                         if y not in self.queue:
                             self.queue.append(y)
-            print(len(self.queue))
-        print("Routers updated:", count, "times")
-        print("Changed value counter:", changesC)    
-        print("Packets sent:", packets)
+            #print(len(self.queue))
+        #print("Routers updated:", count, "times")
+        #print("Changed value counter:", changesC)    
+        #print("Packets sent:", packets)
         return (packets, count, changesC)                
         #for x in self.tables:
             #print("x:", self.tables[x])
